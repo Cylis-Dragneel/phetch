@@ -30,5 +30,5 @@ func main() {
 	}
 
 	// Display system information
-	display.ShowSystemInfo(sysInfo)
+	display.ShowSystemInfo(sysInfo, cfg)
 }
