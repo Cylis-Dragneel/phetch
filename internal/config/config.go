@@ -19,6 +19,7 @@ type Config struct {
 	ShowUptime       bool
 	ShowArchitecture bool
 	ShowMemory       bool
+	UseKittyProtocol bool // Add this new field
 }
 
 func LoadOrCreate() (*Config, error) {
@@ -51,6 +52,7 @@ show_kernel = true
 show_uptime = true
 show_architecture = true
 show_memory = true
+use_kitty_protocol = true
 
 -- Add other configuration options here
 `
@@ -100,6 +102,7 @@ func loadConfig(path string) (*Config, error) {
 	cfg.ShowUptime = getBoolOption("show_uptime")
 	cfg.ShowArchitecture = getBoolOption("show_architecture")
 	cfg.ShowMemory = getBoolOption("show_memory")
+	cfg.UseKittyProtocol = getBoolOption("use_kitty_protocol")
 
 	return cfg, nil
 }

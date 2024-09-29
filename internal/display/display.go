@@ -3,6 +3,7 @@ package display
 import (
 	"fmt"
 	"image"
+	"io"
 	"os"
 	"path/filepath"
 
@@ -10,13 +11,15 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 
+	"encoding/base64"
+
 	"github.com/Cylis-Dragneel/phetch/internal/config"
 	"github.com/Cylis-Dragneel/phetch/internal/system"
 	"github.com/eliukblau/pixterm/pkg/ansimage"
 	"golang.org/x/term"
 )
 
-func ShowArt(path string) error {
+func ShowArt(path string, useKitty bool) error {
 	if path == "" {
 		return nil // No art to display
 	}
@@ -26,7 +29,11 @@ func ShowArt(path string) error {
 	case ".txt":
 		return displayASCII(path)
 	case ".png", ".jpg", ".jpeg":
-		return displayImage(path)
+		if useKitty {
+			return displayKittyImage(path)
+		} else {
+			return displayImage(path)
+		}
 	default:
 		return fmt.Errorf("unsupported file type: %s", ext)
 	}
@@ -116,4 +123,26 @@ func ShowSystemInfo(info system.SystemInfo, cfg *config.Config) {
 		fmt.Printf("Total memory: %dGB\n", info.TotalMemory/1024/1024/1024+1)
 		fmt.Printf("Used memory percentage: %.0f%%\n", info.UsedMemoryPct)
 	}
+}
+
+func displayKittyImage(path string) error {
+	file, err := os.Open(path)
+	if err != nil {
+		return fmt.Errorf("failed to open image: %v", err)
+	}
+	defer file.Close()
+
+	// Read the image file
+	imageData, err := io.ReadAll(file)
+	if err != nil {
+		return fmt.Errorf("failed to read image: %v", err)
+	}
+
+	// Encode the image data as base64
+	encodedImage := base64.StdEncoding.EncodeToString(imageData)
+
+	// Kitty protocol escape sequence
+	fmt.Printf("\033_Ga=T,f=100,s=1,v=1,c=1;%s\033\\\n", encodedImage)
+
+	return nil
 }

@@ -24,7 +24,7 @@ func main() {
 	sysInfo = config.OverrideSystemInfo(cfg, sysInfo)
 
 	// Display ASCII art or image
-	err = display.ShowArt(cfg.ArtPath)
+	err = display.ShowArt(cfg.ArtPath, cfg.UseKittyProtocol)
 	if err != nil {
 		fmt.Printf("Error displaying art: %v\n", err)
 	}
